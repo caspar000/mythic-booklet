@@ -21,14 +21,15 @@ media_libraries:
           width: 2048
           height: 2048
 
-# Images are stored next to the entry that uses them, so Astro can optimize them.
+# Astro resolves /src/... image paths from the project root and optimizes them.
+media_folder: /src/assets/uploads
+public_folder: /src/assets/uploads
+
 collections:
   - name: sessions
     label: Sessions
     label_singular: Session
     folder: src/content/sessions
-    media_folder: ''
-    public_folder: ''
     create: true
     slug: 'session-{{fields.number}}'
     identifier_field: number
@@ -56,8 +57,6 @@ collections:
     label: Knights
     label_singular: Knight
     folder: src/content/knights
-    media_folder: ''
-    public_folder: ''
     create: true
     identifier_field: name
     fields:
@@ -101,8 +100,6 @@ collections:
     label: NPCs
     label_singular: NPC
     folder: src/content/npcs
-    media_folder: ''
-    public_folder: ''
     create: true
     identifier_field: name
     fields:
@@ -117,8 +114,6 @@ collections:
     label: Myths
     label_singular: Myth
     folder: src/content/myths
-    media_folder: ''
-    public_folder: ''
     create: true
     identifier_field: name
     fields:
@@ -141,8 +136,6 @@ collections:
     label: Holdings
     label_singular: Holding
     folder: src/content/holdings
-    media_folder: ''
-    public_folder: ''
     create: true
     identifier_field: name
     fields:
@@ -154,8 +147,6 @@ collections:
 
   - name: campaign
     label: Campaign
-    media_folder: ''
-    public_folder: ''
     files:
       - name: campaign
         label: Home page
