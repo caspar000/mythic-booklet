@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import EntryPage from '../../components/EntryPage.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import Appearances from '../../components/Appearances.astro';
+import { sessionsMentioning } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getCollection('npcs')).map((npc) => ({ params: { id: npc.id }, props: { npc } }));
+}
+
+const { npc } = Astro.props;
+const { Content } = await render(npc);
+const { name, image, description, status, holding } = npc.data;
+const sessions = await sessionsMentioning('npcs', npc.id);
+---
+
+<EntryPage title={name} subtitle={description} image={image}>
+  <p><StatusBadge status={status} /></p>
+  {holding && <p><span class="label">Holding:</span> <RefLinks refs={[holding]} /></p>}
+  <div class="prose"><Content /></div>
+  <Appearances sessions={sessions} />
+</EntryPage>

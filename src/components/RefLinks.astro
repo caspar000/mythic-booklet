@@ -1,0 +1,33 @@
+---
+import { getEntries } from 'astro:content';
+import { sessionLabel, url } from '../lib/content';
+
+type Ref = { collection: 'sessions' | 'knights' | 'npcs' | 'myths' | 'holdings'; id: string };
+
+interface Props {
+  refs: Ref[];
+  empty?: string;
+}
+
+const { refs, empty } = Astro.props;
+const entries = (await getEntries(refs)).filter((e) => e !== undefined);
+const links = entries.map((e) => ({
+  href: url(`${e.collection}/${e.id}/`),
+  label: e.collection === 'sessions' ? sessionLabel(e) : e.data.name,
+}));
+---
+
+{
+  links.length > 0 ? (
+    <span>
+      {links.map((l, i) => (
+        <>
+          {i > 0 && ', '}
+          <a href={l.href}>{l.label}</a>
+        </>
+      ))}
+    </span>
+  ) : (
+    empty && <span class="muted">{empty}</span>
+  )
+}

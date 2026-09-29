@@ -1,0 +1,34 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import { getSessions, url } from '../../lib/content';
+
+const sessions = await getSessions();
+---
+
+<Layout title="Sessions">
+  <h1 class="page-title">Sessions</h1>
+  <div class="table-wrap">
+    <table class="book">
+      <thead>
+        <tr><th></th><th>Session</th><th>Played</th><th>Knights</th></tr>
+      </thead>
+      <tbody>
+        {
+          sessions.map((s) => (
+            <tr>
+              <td class="index">{s.data.number}</td>
+              <td>
+                <a href={url(`sessions/${s.id}/`)}>{s.data.title ?? `Session ${s.data.number}`}</a>
+              </td>
+              <td>{s.data.date?.toLocaleDateString('en-GB', { dateStyle: 'medium' }) ?? '—'}</td>
+              <td>
+                <RefLinks refs={s.data.knights} empty="—" />
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Layout>

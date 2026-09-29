@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import EntryIndex from '../../components/EntryIndex.astro';
+import { byName, url } from '../../lib/content';
+
+const holdings = (await getCollection('holdings')).sort(byName);
+const items = holdings.map((h) => ({ href: url(`holdings/${h.id}/`), ...h.data }));
+---
+
+<Layout title="Holdings">
+  <h1 class="page-title">Holdings</h1>
+  <EntryIndex items={items} />
+</Layout>

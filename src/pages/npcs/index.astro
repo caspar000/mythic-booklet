@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import EntryIndex from '../../components/EntryIndex.astro';
+import { byName, url } from '../../lib/content';
+
+const npcs = (await getCollection('npcs')).sort(byName);
+const items = npcs.map((n) => ({ href: url(`npcs/${n.id}/`), ...n.data }));
+---
+
+<Layout title="NPCs">
+  <h1 class="page-title">NPCs</h1>
+  <EntryIndex items={items} />
+</Layout>

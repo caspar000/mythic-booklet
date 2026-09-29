@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import KnightTable from '../components/KnightTable.astro';
+import RefLinks from '../components/RefLinks.astro';
+import { byName, getSessions, sessionLabel, url } from '../lib/content';
+
+const campaign = await getEntry('campaign', 'index');
+if (!campaign) throw new Error('Missing src/content/campaign/index.md');
+const { Content } = await render(campaign);
+const knights = (await getCollection('knights')).sort(byName);
+const latest = (await getSessions()).at(-1);
+---
+
+<Layout title={campaign.data.title}>
+  <h1 class="page-title">{campaign.data.title}</h1>
+  <div class="premise prose"><Content /></div>
+
+  <h2>The Knights</h2>
+  <KnightTable knights={knights} />
+
+  {
+    latest && (
+      <>
+        <h2>Latest session</h2>
+        <a class="latest" href={url(`sessions/${latest.id}/`)}>
+          <span class="label">{sessionLabel(latest)}</span>
+          {latest.data.date && <span class="muted">{latest.data.date.toLocaleDateString('en-GB', { dateStyle: 'long' })}</span>}
+        </a>
+        {latest.data.knights.length > 0 && (
+          <p>
+            <span class="label">Knights:</span> <RefLinks refs={latest.data.knights} />
+          </p>
+        )}
+      </>
+    )
+  }
+
+  <h2>The Realm</h2>
+  {
+    campaign.data.map ? (
+      <div class="frame">
+        <Image src={campaign.data.map} alt="Map of the Realm" width={1400} />
+      </div>
+    ) : (
+      <p class="muted">No map of the Realm yet.</p>
+    )
+  }
+</Layout>
+
+<style>
+  .premise {
+    text-align: center;
+    font-style: italic;
+    max-width: 36rem;
+    margin: 0 auto 2rem;
+  }
+
+  .latest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    align-items: baseline;
+    font-size: 1.15rem;
+  }
+</style>

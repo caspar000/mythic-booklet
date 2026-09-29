@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import KnightTable from '../../components/KnightTable.astro';
+import { byName } from '../../lib/content';
+
+const knights = (await getCollection('knights')).sort(byName);
+---
+
+<Layout title="Knights">
+  <h1 class="page-title">Knights</h1>
+  <KnightTable knights={knights} />
+</Layout>

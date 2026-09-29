@@ -1,0 +1,90 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import { getSessions, sessionLabel, url } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const sessions = await getSessions();
+  return sessions.map((session, i) => ({
+    params: { id: session.id },
+    props: { session, prev: sessions[i - 1], next: sessions[i + 1] },
+  }));
+}
+
+const { session, prev, next } = Astro.props;
+const { Content } = await render(session);
+const { number, title, date, cover, knights, npcs, myths, holdings } = session.data;
+const encountered = [
+  { label: 'NPCs', refs: npcs },
+  { label: 'Myths', refs: myths },
+  { label: 'Holdings', refs: holdings },
+].filter((g) => g.refs.length > 0);
+---
+
+<Layout title={sessionLabel(session)}>
+  <div class="head">
+    <span class="badge-num">{number}</span>
+    <h1 class="page-title">{title ?? `Session ${number}`}</h1>
+    {title && <p class="subtitle">Session {number}</p>}
+    {date && <p class="subtitle">{date.toLocaleDateString('en-GB', { dateStyle: 'long' })}</p>}
+  </div>
+
+  {knights.length > 0 && (
+    <p><span class="label">Knights present:</span> <RefLinks refs={knights} /></p>
+  )}
+
+  {cover && (
+    <div class="frame">
+      <Image src={cover} alt={sessionLabel(session)} width={1400} />
+    </div>
+  )}
+
+  <article class="prose"><Content /></article>
+
+  {encountered.length > 0 && (
+    <>
+      <h2>Encountered</h2>
+      {encountered.map((g) => (
+        <p><span class="label">{g.label}:</span> <RefLinks refs={g.refs} /></p>
+      ))}
+    </>
+  )}
+
+  <nav class="pager">
+    {prev ? <a href={url(`sessions/${prev.id}/`)}>← {sessionLabel(prev)}</a> : <span />}
+    {next && <a href={url(`sessions/${next.id}/`)}>{sessionLabel(next)} →</a>}
+  </nav>
+</Layout>
+
+<style>
+  .head {
+    text-align: center;
+  }
+
+  .badge-num {
+    display: inline-grid;
+    place-items: center;
+    min-width: 3.2rem;
+    height: 3.2rem;
+    padding: 0 0.4rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .head .subtitle {
+    margin-bottom: 0.3rem;
+  }
+
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 3px double var(--sage);
+  }
+</style>

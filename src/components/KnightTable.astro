@@ -1,0 +1,101 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import StatusBadge from './StatusBadge.astro';
+import { url } from '../lib/content';
+import { rankFor } from '../lib/rank';
+
+interface Props {
+  knights: CollectionEntry<'knights'>[];
+}
+
+const { knights } = Astro.props;
+const stats = ['vig', 'cla', 'spi', 'gd'] as const;
+const history = (k: CollectionEntry<'knights'>, stat: (typeof stats)[number]) =>
+  k.data.ages.length ? k.data.ages.map((a) => a[stat] ?? '—').join(' › ') : '—';
+---
+
+<div class="table-wrap">
+  <table class="book">
+    <thead>
+      <tr>
+        <th class="pin">Knight</th>
+        <th>Player</th>
+        <th>Status</th>
+        <th>Glory</th>
+        {stats.map((s) => <th class="stat">{s}</th>)}
+        <th>Fate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        knights.map((k) => (
+          <tr>
+            <td class="pin">
+              <a class="knight" href={url(`knights/${k.id}/`)}>
+                {k.data.portrait ? (
+                  <Image src={k.data.portrait} alt="" width={64} height={64} class="thumb" />
+                ) : (
+                  <span class="thumb blank" />
+                )}
+                <span>{k.data.name}</span>
+              </a>
+            </td>
+            <td>{k.data.player ?? '—'}</td>
+            <td>
+              <StatusBadge status={k.data.status} />
+            </td>
+            <td class="nowrap">
+              {k.data.glory} <span class="muted">{rankFor(k.data.glory)}</span>
+            </td>
+            {stats.map((s) => (
+              <td class="nowrap">{history(k, s)}</td>
+            ))}
+            <td class="fate">{k.data.fate ?? '—'}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .pin {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+
+  td.pin {
+    box-shadow: 2px 0 0 var(--ink);
+  }
+
+  .knight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .thumb {
+    width: 2rem;
+    height: 2rem;
+    object-fit: cover;
+    border: 1px solid var(--ink);
+    flex: none;
+  }
+
+  .blank {
+    display: inline-block;
+    background: var(--teal);
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .fate {
+    min-width: 12rem;
+  }
+</style>

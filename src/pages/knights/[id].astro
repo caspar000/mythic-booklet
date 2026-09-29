@@ -1,0 +1,95 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import EntryPage from '../../components/EntryPage.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import Appearances from '../../components/Appearances.astro';
+import { sessionsMentioning, url } from '../../lib/content';
+import { rankFor } from '../../lib/rank';
+
+export async function getStaticPaths() {
+  return (await getCollection('knights')).map((knight) => ({ params: { id: knight.id }, props: { knight } }));
+}
+
+const { knight } = Astro.props;
+const { Content } = await render(knight);
+const { name, player, portrait, status, fate, glory, ages, couplet, ability, passion } = knight.data;
+const seer = knight.data.seer && (await getEntry(knight.data.seer));
+const sessions = await sessionsMentioning('knights', knight.id);
+const stats = ['vig', 'cla', 'spi', 'gd'] as const;
+---
+
+<EntryPage title={name} subtitle={couplet} image={portrait}>
+  <p>
+    <StatusBadge status={status} />
+    {player && <span> Played by {player}</span>}
+  </p>
+  {fate && <p><span class="label">Fate:</span> {fate}</p>}
+  <p><span class="label">Glory:</span> {glory} · {rankFor(glory)}</p>
+
+  {
+    ages.length > 0 && (
+      <div class="table-wrap">
+        <table class="book">
+          <thead>
+            <tr>
+              <th>Age</th>
+              {stats.map((s) => <th class="stat">{s}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {ages.map((a) => (
+              <tr>
+                <td class="index">{a.label}</td>
+                {stats.map((s) => <td>{a[s] ?? '—'}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    ability?.name && (
+      <>
+        <h2>Ability · {ability.name}</h2>
+        {ability.text && <p>{ability.text}</p>}
+      </>
+    )
+  }
+  {
+    passion?.name && (
+      <>
+        <h2>Passion · {passion.name}</h2>
+        {passion.text && <p>{passion.text}</p>}
+      </>
+    )
+  }
+  {
+    seer && (
+      <>
+        <p class="muted knighted">Knighted by…</p>
+        <p class="seer gothic"><a href={url(`npcs/${seer.id}/`)}>{seer.data.name}</a></p>
+      </>
+    )
+  }
+
+  <div class="prose"><Content /></div>
+  <Appearances sessions={sessions} heading="Sessions" />
+</EntryPage>
+
+<style>
+  .knighted {
+    margin: 1.6rem 0 0;
+  }
+
+  .seer {
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  .seer a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+</style>

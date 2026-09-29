@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { sessionLabel, url } from '../lib/content';
+
+interface Props {
+  sessions: CollectionEntry<'sessions'>[];
+  heading?: string;
+}
+
+const { sessions, heading = 'Appears in' } = Astro.props;
+---
+
+<h2>{heading}</h2>
+{
+  sessions.length > 0 ? (
+    <ul>
+      {sessions.map((s) => (
+        <li>
+          <a href={url(`sessions/${s.id}/`)}>{sessionLabel(s)}</a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="muted">No sessions yet.</p>
+  )
+}

@@ -1,0 +1,45 @@
+---
+import { getCollection, render } from 'astro:content';
+import EntryPage from '../../components/EntryPage.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import Appearances from '../../components/Appearances.astro';
+import { sessionsMentioning } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getCollection('myths')).map((myth) => ({ params: { id: myth.id }, props: { myth } }));
+}
+
+const { myth } = Astro.props;
+const { Content } = await render(myth);
+const { name, image, description, status, omens } = myth.data;
+const sessions = await sessionsMentioning('myths', myth.id);
+---
+
+<EntryPage title={name} subtitle={description} image={image}>
+  <p><StatusBadge status={status} /></p>
+  <div class="prose"><Content /></div>
+
+  <h2>Omens seen</h2>
+  {
+    omens.length > 0 ? (
+      <div class="table-wrap">
+        <table class="book">
+          <tbody>
+            {omens.map((o, i) => (
+              <tr>
+                <td class="index">{i + 1}</td>
+                <td>{o.text}</td>
+                <td>{o.session && <RefLinks refs={[o.session]} />}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <p class="muted">No omens seen yet.</p>
+    )
+  }
+
+  <Appearances sessions={sessions} />
+</EntryPage>

@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+import EntryPage from '../../components/EntryPage.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import Appearances from '../../components/Appearances.astro';
+import { byName, sessionsMentioning } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getCollection('holdings')).map((holding) => ({ params: { id: holding.id }, props: { holding } }));
+}
+
+const { holding } = Astro.props;
+const { Content } = await render(holding);
+const { name, image, description, ruler } = holding.data;
+const residents = (await getCollection('npcs', (n) => n.data.holding?.id === holding.id)).sort(byName);
+const sessions = await sessionsMentioning('holdings', holding.id);
+---
+
+<EntryPage title={name} subtitle={description} image={image}>
+  {ruler && <p><span class="label">Ruled by:</span> <RefLinks refs={[ruler]} /></p>}
+  {
+    residents.length > 0 && (
+      <p>
+        <span class="label">People:</span> <RefLinks refs={residents.map((n) => ({ collection: 'npcs', id: n.id }))} />
+      </p>
+    )
+  }
+  <div class="prose"><Content /></div>
+  <Appearances sessions={sessions} />
+</EntryPage>

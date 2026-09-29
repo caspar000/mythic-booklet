@@ -1,0 +1,166 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+backend:
+  name: github
+  repo: caspar000/mythic-booklet
+  branch: main
+  auth_methods: [token]
+
+site_url: https://caspar000.github.io/mythic-booklet
+display_url: https://caspar000.github.io/mythic-booklet/
+
+output:
+  omit_empty_optional_fields: true
+
+media_libraries:
+  default:
+    config:
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 2048
+          height: 2048
+
+# Images are stored next to the entry that uses them, so Astro can optimize them.
+collections:
+  - name: sessions
+    label: Sessions
+    label_singular: Session
+    folder: src/content/sessions
+    media_folder: ''
+    public_folder: ''
+    create: true
+    slug: 'session-{{fields.number}}'
+    identifier_field: number
+    summary: 'Session {{number}} {{title}}'
+    sortable_fields: [number, date]
+    fields:
+      - { name: number, label: Number, widget: number, value_type: int, min: 1 }
+      - { name: title, label: Title, required: false }
+      - { name: date, label: Date played, widget: datetime, type: date, picker_utc: true, required: false }
+      - name: knights
+        label: Knights present
+        widget: relation
+        collection: knights
+        multiple: true
+        required: false
+        display_fields: [name]
+        search_fields: [name]
+      - { name: cover, label: Cover image, widget: image, required: false }
+      - { name: body, label: Log, widget: markdown }
+      - { name: npcs, label: NPCs encountered, widget: relation, collection: npcs, multiple: true, required: false, display_fields: [name], search_fields: [name] }
+      - { name: myths, label: Myths encountered, widget: relation, collection: myths, multiple: true, required: false, display_fields: [name], search_fields: [name] }
+      - { name: holdings, label: Holdings visited, widget: relation, collection: holdings, multiple: true, required: false, display_fields: [name], search_fields: [name] }
+
+  - name: knights
+    label: Knights
+    label_singular: Knight
+    folder: src/content/knights
+    media_folder: ''
+    public_folder: ''
+    create: true
+    identifier_field: name
+    fields:
+      - { name: name, label: Name }
+      - { name: player, label: Player, required: false }
+      - { name: portrait, label: Portrait, widget: image, required: false }
+      - { name: status, label: Status, widget: select, options: [Questing, Dead, Retired, Missing, Other], default: Questing }
+      - { name: fate, label: Fate, required: false, hint: 'One line, e.g. "Slain by the Hydra, session 9"' }
+      - { name: glory, label: Glory, widget: number, value_type: int, min: 0, default: 0, hint: Rank is worked out from Glory }
+      - name: ages
+        label: Virtues and Guard per Age
+        label_singular: Age
+        widget: list
+        required: false
+        summary: '{{label}}: VIG {{vig}} · CLA {{cla}} · SPI {{spi}} · GD {{gd}}'
+        fields:
+          - { name: label, label: Age, hint: 'e.g. "Age 1"' }
+          - { name: vig, label: VIG, widget: number, value_type: int, min: 0, required: false }
+          - { name: cla, label: CLA, widget: number, value_type: int, min: 0, required: false }
+          - { name: spi, label: SPI, widget: number, value_type: int, min: 0, required: false }
+          - { name: gd, label: GD, widget: number, value_type: int, min: 0, required: false }
+      - { name: couplet, label: Couplet, widget: text, required: false }
+      - name: ability
+        label: Ability
+        widget: object
+        required: false
+        fields:
+          - { name: name, label: Name, required: false }
+          - { name: text, label: Text, widget: text, required: false }
+      - name: passion
+        label: Passion
+        widget: object
+        required: false
+        fields:
+          - { name: name, label: Name, required: false }
+          - { name: text, label: Text, widget: text, required: false }
+      - { name: seer, label: Knighted by (Seer), widget: relation, collection: npcs, required: false, display_fields: [name], search_fields: [name] }
+      - { name: body, label: Notes, widget: markdown, required: false }
+
+  - name: npcs
+    label: NPCs
+    label_singular: NPC
+    folder: src/content/npcs
+    media_folder: ''
+    public_folder: ''
+    create: true
+    identifier_field: name
+    fields:
+      - { name: name, label: Name }
+      - { name: image, label: Image, widget: image, required: false }
+      - { name: description, label: One-line description, required: false }
+      - { name: status, label: Status, widget: select, options: [Alive, Dead, Unknown], default: Unknown }
+      - { name: holding, label: Holding, widget: relation, collection: holdings, required: false, display_fields: [name], search_fields: [name] }
+      - { name: body, label: Notes, widget: markdown, required: false }
+
+  - name: myths
+    label: Myths
+    label_singular: Myth
+    folder: src/content/myths
+    media_folder: ''
+    public_folder: ''
+    create: true
+    identifier_field: name
+    fields:
+      - { name: name, label: Name }
+      - { name: image, label: Image, widget: image, required: false }
+      - { name: description, label: Description, required: false }
+      - { name: status, label: Status, widget: select, options: [Active, Resolved, Dormant], default: Active }
+      - name: omens
+        label: Omens seen
+        label_singular: Omen
+        widget: list
+        required: false
+        summary: '{{text}}'
+        fields:
+          - { name: text, label: Omen, widget: text }
+          - { name: session, label: Session, widget: relation, collection: sessions, required: false, display_fields: [number, title], search_fields: [number, title] }
+      - { name: body, label: Notes, widget: markdown, required: false }
+
+  - name: holdings
+    label: Holdings
+    label_singular: Holding
+    folder: src/content/holdings
+    media_folder: ''
+    public_folder: ''
+    create: true
+    identifier_field: name
+    fields:
+      - { name: name, label: Name }
+      - { name: image, label: Image, widget: image, required: false }
+      - { name: description, label: Description, required: false }
+      - { name: ruler, label: Ruler, widget: relation, collection: npcs, required: false, display_fields: [name], search_fields: [name] }
+      - { name: body, label: Notes, widget: markdown, required: false }
+
+  - name: campaign
+    label: Campaign
+    media_folder: ''
+    public_folder: ''
+    files:
+      - name: campaign
+        label: Home page
+        file: src/content/campaign/index.md
+        fields:
+          - { name: title, label: Campaign title }
+          - { name: map, label: Realm map, widget: image, required: false }
+          - { name: body, label: Premise, widget: markdown }

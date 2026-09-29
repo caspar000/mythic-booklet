@@ -1,0 +1,53 @@
+---
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+---
+
+<span class:list={['badge', status.toLowerCase()]}>{status}</span>
+
+<style>
+  .badge {
+    display: inline-block;
+    padding: 0 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--ink);
+    white-space: nowrap;
+    background: var(--paper);
+  }
+
+  .questing,
+  .alive,
+  .active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--paper);
+  }
+
+  .dead {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .dead::before {
+    content: '✝ ';
+  }
+
+  .resolved,
+  .retired {
+    background: var(--sage);
+    border-color: var(--sage-deep);
+  }
+
+  .missing,
+  .dormant,
+  .unknown,
+  .other {
+    border-style: dashed;
+  }
+</style>

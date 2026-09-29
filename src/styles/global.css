@@ -1,0 +1,184 @@
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/400-italic.css';
+@import '@fontsource/eb-garamond/600.css';
+@import '@fontsource/eb-garamond/700.css';
+@import '@fontsource/unifrakturmaguntia/400.css';
+
+:root {
+  --paper: #e8e8e4;
+  --paper-deep: #d9d9d4;
+  --row: #cbcbc6;
+  --ink: #1d2224;
+  --ink-soft: #3a4144;
+  --teal: #1f3034;
+  --teal-mid: #33494c;
+  --sage: #a8a67f;
+  --sage-deep: #6f6d4c;
+  --blood: #6b2a24;
+  --sidebar: 16rem;
+  --serif: 'EB Garamond', Garamond, Georgia, serif;
+  --gothic: 'UnifrakturMaguntia', 'Old English Text MT', serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--teal-mid);
+  text-decoration-color: var(--sage);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.15;
+  margin: 1.6em 0 0.5em;
+}
+
+h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.gothic {
+  font-family: var(--gothic);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.page-title {
+  font-family: var(--gothic);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  text-align: center;
+  margin: 0.2em 0 0.1em;
+}
+
+.subtitle {
+  text-align: center;
+  font-style: italic;
+  margin: 0 0 1.5rem;
+  white-space: pre-line;
+  color: var(--ink-soft);
+}
+
+.stat {
+  font-variant: small-caps;
+  text-transform: lowercase;
+  font-feature-settings: 'smcp';
+}
+
+/* Book-style table: dark header bar, dark index column, alternating grey rows */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 2px solid var(--ink);
+}
+
+table.book {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+table.book th {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+table.book td {
+  padding: 0.3rem 0.6rem;
+  vertical-align: middle;
+}
+
+table.book tbody tr:nth-child(odd) td {
+  background: var(--paper);
+}
+
+table.book tbody tr:nth-child(even) td {
+  background: var(--row);
+}
+
+table.book td.index {
+  background: var(--ink) !important;
+  color: var(--paper);
+  font-weight: 700;
+}
+
+.frame {
+  border: 3px solid var(--teal);
+  outline: 1px solid var(--teal);
+  outline-offset: 3px;
+  margin: 1.2rem 0;
+}
+
+.muted {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.prose ul {
+  padding-left: 1.2rem;
+}
+
+.prose li {
+  margin: 0.35em 0;
+}
+
+.prose li::marker {
+  color: var(--sage-deep);
+}
+
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.2rem 1rem;
+  border-left: 3px solid var(--sage);
+  font-style: italic;
+}
